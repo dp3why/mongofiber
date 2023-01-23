@@ -18,7 +18,7 @@ func GetDBCollection(col string) *mongo.Collection {
 func InitDB() error {
 	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
-		return errors.New("you must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
+		return errors.New("error mongodb uri")
 	}
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
 	if err != nil {

@@ -9,11 +9,6 @@ A simple CRUD app that showcases how you can use Fiber and MongoDB together
 3. clone this repo
 4. create a .env file in the root of the project and add the following:
 
-```
-MONGO_URI=mongodb://localhost:27017
-PORT=8080
-```
-
 5. run `go run main.go` in the root of the project
 
 ### endpoints

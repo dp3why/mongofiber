@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/bmdavis419/fiber-mongo-example/common"
-	"github.com/bmdavis419/fiber-mongo-example/router"
+	"github.com/dp3why/mongofiber/common"
+	"github.com/dp3why/mongofiber/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
