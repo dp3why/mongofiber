@@ -1,4 +1,4 @@
-module github.com/dp3why/gomongo
+module github.com/dp3why/mongofiber
 
 go 1.19
 
