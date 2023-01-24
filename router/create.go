@@ -23,34 +23,34 @@ import (
 
 var BUCKET_NAME string =  os.Getenv("BUCKET_NAME")
 
-func saveToGCS(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
+func saveToGCS(c *fiber.Ctx, file *multipart.FileHeader) (string, string , error) {
     // Open the uploaded file
     src, err := file.Open()
     if err != nil {
-        return "", fmt.Errorf("failed to open uploaded file: %w", err)
+        fmt.Println("failed to open uploaded file")
     }
     defer src.Close()
 
     // Create a client for the Google Cloud Storage API
     client, err := storage.NewClient(c.Context())
     if err != nil {
-        return "", fmt.Errorf("failed to create client for Google Cloud Storage: %w", err)
+		fmt.Println("failed to create client to connect to GCS")
     }
 
     // Create/get a bucket
     bucket := client.Bucket(BUCKET_NAME)
-
+	uuid := uuid.New()
     // Create a new file object
-    obj := bucket.Object(file.Filename)
+    obj := bucket.Object(uuid)
 
     // Upload the file to the bucket
     w := obj.NewWriter(c.Context())
     if _, err = io.Copy(w, src); err != nil {
-        return "", fmt.Errorf("failed to upload image to Google Cloud Storage: %w", err)
+        fmt.Println("failed to upload image to Google Cloud Storage")
     }
 
     if err := w.Close(); err != nil {
-        return "", fmt.Errorf("failed to close writer: %w", err)
+        panic(err)
     }
 
 	if err := obj.ACL().Set(c.Context(), storage.AllUsers, storage.RoleReader); err != nil {
@@ -58,8 +58,9 @@ func saveToGCS(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
  	}
     // Get the URL of the uploaded file
     ctx := context.Background()
-    attrs, _ := obj.Attrs(ctx)
-    return attrs.MediaLink, nil
+    attrs, err := obj.Attrs(ctx)
+	
+    return attrs.MediaLink, attrs.Name, err
 }
 
 
@@ -75,7 +76,7 @@ func createBook(c *fiber.Ctx) error {
     }
 
     // Upload the image to GCS
-    url, err := saveToGCS(c, file)
+    url, filename, err := saveToGCS(c, file)
     if err != nil {
         return c.Status(500).JSON(fiber.Map{
             "error": err.Error(),
@@ -90,11 +91,12 @@ func createBook(c *fiber.Ctx) error {
     // Create the book
     coll := common.GetDBCollection("books")
     _, err = coll.InsertOne(c.Context(), bson.M{
-        "_id":  uuid.New(),
+        
         "title": title,
         "author": author,
         "year": year,
         "Url": url,
+		"Filename": filename,
     })
     if err != nil {
         return c.Status(500).JSON(fiber.Map{
