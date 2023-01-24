@@ -5,4 +5,5 @@ type Book struct {
 	Title  string `json:"title" bson:"title"`
 	Author string `json:"author" bson:"author"`
 	Year   string `json:"year" bson:"year"`
+	Url    string `json:"url" bson:"url"`
 }
