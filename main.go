@@ -20,14 +20,10 @@ func main() {
 }
 
 func run() error {
-	// init env
-	err := common.LoadEnv()
-	if err != nil {
-		return err
-	}
+	
 
 	// init db
-	err = common.InitDB()
+	err := common.InitDB()
 	if err != nil {
 		return err
 	}
