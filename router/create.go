@@ -24,6 +24,10 @@ import (
 var BUCKET_NAME string =  os.Getenv("BUCKET_NAME")
 
 func saveToGCS(c *fiber.Ctx, file *multipart.FileHeader) (string, string , error) {
+
+    if BUCKET_NAME == "" {
+        return "", "", fmt.Errorf("BUCKET_NAME environment variable is not set")
+    }
     // Open the uploaded file
     src, err := file.Open()
     if err != nil {
