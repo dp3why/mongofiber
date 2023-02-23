@@ -1,17 +1,12 @@
-# fiber-mongo-example
+# Mongofiber
 
-A simple CRUD app that showcases how you can use Fiber and MongoDB together
+Go Fiber + MongoDB + Google Cloud Storage
 
-### instructions
+## Introduction
 
-1. ensure you have the latest version of Go installed
-2. ensure that you have MongoDB installed and running
-3. clone this repo
-4. create a .env file in the root of the project and add the following:
+- Leveraged MongoDB for data management, Google Cloud Storage for storing images
 
-5. run `go run main.go` in the root of the project
-
-### endpoints
+## Endpoints
 
 #### GET /books
 
