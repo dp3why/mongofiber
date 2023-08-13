@@ -7,6 +7,8 @@ import (
 	"mime/multipart"
 	"os"
 
+	"github.com/joho/godotenv"
+
 	"cloud.google.com/go/storage"
 	"github.com/dp3why/mongofiber/common"
 	"github.com/gofiber/fiber/v2"
@@ -21,9 +23,14 @@ import (
 // 	Year   string `json:"year" bson:"year"`
 // }
 
-var BUCKET_NAME string =  os.Getenv("BUCKET_NAME")
+
 
 func saveToGCS(c *fiber.Ctx, file *multipart.FileHeader) (string, string , error) {
+    if err := godotenv.Load(); err != nil {
+        fmt.Println("Did not load .env file:", err)
+    }
+    
+    var BUCKET_NAME string =  os.Getenv("BUCKET_NAME")
 
     if BUCKET_NAME == "" {
         return "", "", fmt.Errorf("BUCKET_NAME environment variable is not set")
@@ -57,9 +64,9 @@ func saveToGCS(c *fiber.Ctx, file *multipart.FileHeader) (string, string , error
         panic(err)
     }
 
-	if err := obj.ACL().Set(c.Context(), storage.AllUsers, storage.RoleReader); err != nil {
-		panic(err)
- 	}
+	// if err := obj.ACL().Set(c.Context(), storage.AllUsers, storage.RoleReader); err != nil {
+	// 	panic(err)
+ 	// }
     // Get the URL of the uploaded file
     ctx := context.Background()
     attrs, err := obj.Attrs(ctx)
@@ -71,6 +78,12 @@ func saveToGCS(c *fiber.Ctx, file *multipart.FileHeader) (string, string , error
 
 // =========== Create ===============
 func createBook(c *fiber.Ctx) error {
+    if err := godotenv.Load(); err != nil {
+        fmt.Println("Did not load .env file:", err)
+    }
+    var cred string =  os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    fmt.Print(cred)
+
     // Get the image from the form
     file, err := c.FormFile("image")
     if err != nil {

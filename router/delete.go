@@ -3,12 +3,14 @@ package router
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/dp3why/mongofiber/common"
 	"github.com/dp3why/mongofiber/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -17,6 +19,12 @@ var book models.Book
 
 
 func deleteBook(c *fiber.Ctx) error {
+	if err := godotenv.Load(); err != nil {
+        fmt.Println("Did not load .env file:", err)
+    }
+    
+    var BUCKET_NAME string = os.Getenv("BUCKET_NAME")
+	
 	// get the id
 	id := c.Params("id")
 	if id == "" {
@@ -55,6 +63,7 @@ func deleteBook(c *fiber.Ctx) error {
 	// Delete on GCS
 	deleteFile(BUCKET_NAME, book.Filename)
 	
+	
 	return c.Status(200).JSON(fiber.Map{
 		"result": result,
 	})
@@ -63,12 +72,14 @@ func deleteBook(c *fiber.Ctx) error {
 
 // Google source code: deleteFile removes specified object.
 func deleteFile( bucket, object string) error {
-	// bucket := "bucket-name"
-	// object := "object-name"
+	if err := godotenv.Load(); err != nil {
+        fmt.Println("Did not load .env file:", err)
+    }
+	
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-			return fmt.Errorf("storage.NewClient: %v", err)
+			return fmt.Errorf("storage.NewClient: %w", err)
 	}
 	defer client.Close()
 
